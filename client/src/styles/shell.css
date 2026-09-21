@@ -1,0 +1,261 @@
+/* ============================================================
+   Shell: persistent left sidebar + slim top bar + content well.
+   Each portal changes the sidebar treatment, not the token set,
+   so the four read as one system with four rooms.
+   ============================================================ */
+
+.shell { display: grid; grid-template-columns: var(--sidebar-w) 1fr; min-height: 100vh; }
+
+/* ------------------------------------------------------------ sidebar */
+.sidebar {
+  display: flex; flex-direction: column;
+  border-right: 1px solid var(--line);
+  background: var(--surface-alt);
+  position: sticky; top: 0; height: 100vh;
+}
+
+.brand {
+  display: flex; align-items: center; gap: var(--s2);
+  padding: 0 var(--s4);
+  height: var(--topbar-h);
+  border-bottom: 1px solid var(--line);
+  font-weight: 600;
+  letter-spacing: -0.015em;
+}
+.brand .mark {
+  width: 15px; height: 15px; flex: none;
+  color: var(--crimson);
+}
+.brand-name { font-size: var(--t-base); }
+.brand-portal { font-size: var(--t-micro); color: var(--muted); font-weight: 500; }
+
+.nav { padding: var(--s3) var(--s2); display: flex; flex-direction: column; gap: 1px; overflow-y: auto; }
+.nav-group-label {
+  font-size: var(--t-micro);
+  color: var(--faint);
+  font-weight: 500;
+  padding: var(--s3) var(--s3) 5px;
+}
+.nav a {
+  display: flex; align-items: center; gap: var(--s3);
+  padding: 7px var(--s3);
+  border-radius: var(--r);
+  color: var(--ink-2);
+  text-decoration: none;
+  font-size: var(--t-base);
+  border-left: 2px solid transparent;
+}
+.nav a:hover { background: var(--bone-sunk); color: var(--ink); }
+.nav a.active { background: var(--surface); color: var(--ink); font-weight: 500; }
+.nav a svg { color: var(--muted); flex: none; }
+.nav a.active svg { color: var(--ink); }
+.nav .badge {
+  margin-left: auto;
+  font-family: var(--mono);
+  font-size: var(--t-micro);
+  color: var(--muted);
+  background: var(--bone-sunk);
+  border-radius: 9px;
+  padding: 1px 6px;
+}
+.nav a.active .badge { background: var(--line); color: var(--ink-2); }
+
+.sidebar-foot {
+  margin-top: auto;
+  padding: var(--s3);
+  border-top: 1px solid var(--line);
+  font-size: var(--t-small);
+}
+
+/* -- portal identities --------------------------------------- */
+/* donor: light rail, crimson active marker — the personal, on-phone portal */
+.shell[data-portal='donor'] .nav a.active { border-left-color: var(--crimson); }
+
+/* requester: ink rail. This is the screen someone opens in a crisis;
+   it carries more weight than the others on purpose. */
+.shell[data-portal='requester'] .sidebar { background: var(--ink); border-right-color: #35302B; }
+.shell[data-portal='requester'] .brand { border-bottom-color: #35302B; color: #F4F0EA; }
+.shell[data-portal='requester'] .brand .mark { color: #D96A6A; }
+.shell[data-portal='requester'] .brand-portal { color: #9C938A; }
+.shell[data-portal='requester'] .nav-group-label { color: #7D746B; }
+.shell[data-portal='requester'] .nav a { color: #C8C0B7; }
+.shell[data-portal='requester'] .nav a svg { color: #8D857C; }
+.shell[data-portal='requester'] .nav a:hover { background: #2E2A26; color: #F4F0EA; }
+.shell[data-portal='requester'] .nav a.active {
+  background: #37312C; color: #FCF9F6; border-left-color: #C3363B;
+}
+.shell[data-portal='requester'] .nav a.active svg { color: #FCF9F6; }
+.shell[data-portal='requester'] .nav .badge { background: #3E3831; color: #C8C0B7; }
+.shell[data-portal='requester'] .sidebar-foot { border-top-color: #35302B; color: #9C938A; }
+.shell[data-portal='requester'] .sidebar-foot .btn {
+  background: #2E2A26; border-color: #45403A; color: #E4DED6;
+}
+.shell[data-portal='requester'] .sidebar-foot .btn:hover { background: #37312C; }
+
+/* bank: light rail, slate marker + a stock strip under the brand */
+.shell[data-portal='bank'] .sidebar { background: var(--slate-wash); border-right-color: #CFD7DD; }
+.shell[data-portal='bank'] .brand { border-bottom-color: #CFD7DD; }
+.shell[data-portal='bank'] .nav a.active { border-left-color: var(--slate); background: #FBFCFD; }
+.shell[data-portal='bank'] .nav a:hover { background: #DDE4E9; }
+.shell[data-portal='bank'] .sidebar-foot { border-top-color: #CFD7DD; }
+
+/* admin: slate rail — city-wide oversight, deliberately the coolest surface */
+.shell[data-portal='admin'] .sidebar { background: var(--slate); border-right-color: #37424C; }
+.shell[data-portal='admin'] .brand { border-bottom-color: #37424C; color: #F1F4F6; }
+.shell[data-portal='admin'] .brand .mark { color: #E4A9A9; }
+.shell[data-portal='admin'] .brand-portal { color: #A8B4BE; }
+.shell[data-portal='admin'] .nav-group-label { color: #8F9CA7; }
+.shell[data-portal='admin'] .nav a { color: #D3DAE0; }
+.shell[data-portal='admin'] .nav a svg { color: #9BA8B3; }
+.shell[data-portal='admin'] .nav a:hover { background: #3C4855; color: #fff; }
+.shell[data-portal='admin'] .nav a.active { background: #37424C; color: #fff; border-left-color: #E4A9A9; }
+.shell[data-portal='admin'] .nav a.active svg { color: #fff; }
+.shell[data-portal='admin'] .nav .badge { background: #3C4855; color: #D3DAE0; }
+.shell[data-portal='admin'] .sidebar-foot { border-top-color: #37424C; color: #A8B4BE; }
+.shell[data-portal='admin'] .sidebar-foot .btn {
+  background: #3C4855; border-color: #4E5A66; color: #E7EBEF;
+}
+
+/* ------------------------------------------------------------ main */
+.main { display: flex; flex-direction: column; min-width: 0; overflow-x: hidden; }
+
+.topbar {
+  display: flex; align-items: center; gap: var(--s4);
+  height: var(--topbar-h);
+  padding: 0 var(--s5);
+  border-bottom: 1px solid var(--line);
+  background: var(--surface);
+  position: sticky; top: 0; z-index: 20;
+}
+.topbar h1 { font-size: var(--t-mid); font-weight: 600; }
+.topbar .context { font-size: var(--t-small); color: var(--muted); }
+.topbar .sep { width: 1px; height: 18px; background: var(--line); }
+
+.content { padding: var(--s5); flex: 1; min-width: 0; max-width: 100%; }
+.content > header { margin-bottom: var(--s5); }
+.content > header p { color: var(--muted); margin-bottom: 0; }
+
+.stack { display: flex; flex-direction: column; gap: var(--s5); min-width: 0; }
+
+/* ------------------------------------------------------------ stat readouts */
+.stats { display: flex; border: 1px solid var(--line); border-radius: var(--r-lg); background: var(--surface); overflow: hidden; }
+.stat { flex: 1; padding: var(--s3) var(--s4); border-right: 1px solid var(--line); min-width: 0; }
+.stat:last-child { border-right: none; }
+.stat .k { font-size: var(--t-small); color: var(--muted); display: block; margin-bottom: 3px; }
+.stat .v { font-family: var(--mono); font-size: var(--t-xl); font-weight: 500; letter-spacing: -0.02em; }
+.stat .v small { font-family: var(--sans); font-size: var(--t-small); color: var(--muted); font-weight: 400; margin-left: 3px; }
+.stat[data-tone='stop'] .v { color: var(--crimson); }
+.stat[data-tone='warn'] .v { color: var(--warn); }
+
+/* ------------------------------------------------------------ radius timer */
+.radius-track { display: flex; align-items: stretch; border: 1px solid var(--line); border-radius: var(--r-lg); overflow: hidden; }
+.radius-step {
+  flex: 1; padding: var(--s3) var(--s4);
+  border-right: 1px solid var(--line);
+  background: var(--surface-alt);
+  color: var(--faint);
+  position: relative;
+}
+.radius-step:last-child { border-right: none; }
+.radius-step .km { font-family: var(--mono); font-size: var(--t-mid); font-weight: 500; display: block; }
+.radius-step .lbl { font-size: var(--t-micro); }
+.radius-step[data-state='done'] { background: var(--surface); color: var(--muted); }
+.radius-step[data-state='done'] .km { color: var(--ink-2); }
+.radius-step[data-state='active'] { background: var(--crimson-wash); color: var(--crimson-ink); }
+.radius-step[data-state='active'] .km { color: var(--crimson); font-weight: 600; }
+.radius-fill {
+  position: absolute; left: 0; bottom: 0; height: 2px;
+  background: var(--crimson);
+  transition: width 1s linear;
+}
+
+/* ------------------------------------------------------------ dev strip */
+.devstrip {
+  display: flex; align-items: center; gap: var(--s3);
+  padding: 7px 12px;
+  border: 1px dashed var(--line-strong);
+  border-radius: var(--r);
+  background: repeating-linear-gradient(135deg, var(--surface-alt), var(--surface-alt) 8px, var(--bone-sunk) 8px, var(--bone-sunk) 16px);
+  font-size: var(--t-small);
+  color: var(--ink-2);
+}
+.devstrip .code { font-family: var(--mono); font-size: var(--t-mid); font-weight: 600; letter-spacing: 0.1em; }
+
+/* ------------------------------------------------------------ sign-in */
+.signin { min-height: 100vh; display: grid; grid-template-columns: 1fr 1fr; }
+.signin-aside {
+  background: var(--ink); color: #E8E2DA;
+  padding: var(--s8) var(--s7);
+  display: flex; flex-direction: column; gap: var(--s6);
+}
+.signin-aside h2 { color: #FCF9F6; font-size: var(--t-2xl); max-width: 16ch; letter-spacing: -0.02em; }
+.signin-aside .lede { color: #B3AAA1; max-width: 42ch; }
+.signin-aside dl { margin: 0; display: grid; grid-template-columns: auto 1fr; gap: 6px var(--s4); font-size: var(--t-small); }
+.signin-aside dt { color: #8D857C; }
+.signin-aside dd { margin: 0; font-family: var(--mono); color: #D8D1C8; }
+.signin-main { display: flex; align-items: center; justify-content: center; padding: var(--s6); }
+.signin-form { width: 100%; max-width: 336px; }
+
+/* ------------------------------------------------------------ low bandwidth */
+body.lean {
+  --surface: var(--bone);
+  --surface-alt: var(--bone);
+  /* system stack first for weight, but keep the Indic faces so a Telugu or
+     Hindi interface does not break when low-bandwidth mode is on */
+  font-family: system-ui, 'Noto Sans Devanagari', 'Noto Sans Telugu', sans-serif;
+}
+body.lean .nav a svg,
+body.lean .brand .mark,
+body.lean .state-icon,
+body.lean .btn svg,
+body.lean .panel-head svg { display: none; }
+body.lean .panel, body.lean .table-wrap, body.lean .stats { border-radius: 0; }
+body.lean .stat .v { font-size: var(--t-mid); }
+body.lean tbody td, body.lean thead th { padding: 4px 8px; }
+body.lean .content { padding: var(--s3); }
+body.lean .grid-2, body.lean .grid-3 { grid-template-columns: 1fr; gap: var(--s3); }
+body.lean .stack { gap: var(--s3); }
+body.lean .chip { border-radius: 0; }
+body.lean .radius-track { display: block; }
+body.lean .radius-step { border-right: none; border-bottom: 1px solid var(--line); }
+
+/* ------------------------------------------------------------ responsive */
+@media (max-width: 900px) {
+  .grid-3 { grid-template-columns: 1fr 1fr; }
+  .signin { grid-template-columns: 1fr; }
+  .signin-aside { order: 2; padding: var(--s6); }
+}
+
+@media (max-width: 720px) {
+  .shell { grid-template-columns: 1fr; }
+  .shell { grid-template-rows: auto 1fr; min-width: 0; }
+  /* brand sits on its own line; the nav scrolls under it rather than behind it */
+  .sidebar {
+    position: static; height: auto; flex-direction: column; align-items: stretch;
+    border-right: none; border-bottom: 1px solid var(--line);
+    width: 100%; max-width: 100vw;
+  }
+  .brand { border-right: none; border-bottom: 1px solid var(--line); }
+  .nav { overflow-x: auto; scrollbar-width: none; }
+  .nav::-webkit-scrollbar { display: none; }
+  .panel, .table-wrap { max-width: 100%; }
+  /* let the table scroll sideways instead of wrapping every cell into a column */
+  table { min-width: 720px; }
+  tbody td, thead th { white-space: nowrap; }
+  .brand { border-bottom: none; border-right: 1px solid var(--line); flex: none; }
+  .nav { flex-direction: row; padding: var(--s2); gap: var(--s1); }
+  .nav a { white-space: nowrap; border-left: none; border-bottom: 2px solid transparent; border-radius: var(--r) var(--r) 0 0; }
+  .shell[data-portal='donor'] .nav a.active { border-left-color: transparent; border-bottom-color: var(--crimson); }
+  .shell[data-portal='requester'] .nav a.active { border-left-color: transparent; border-bottom-color: #C3363B; }
+  .shell[data-portal='bank'] .nav a.active { border-left-color: transparent; border-bottom-color: var(--slate); }
+  .shell[data-portal='admin'] .nav a.active { border-left-color: transparent; border-bottom-color: #E4A9A9; }
+  .nav-group-label, .sidebar-foot { display: none; }
+  .content { padding: var(--s4) var(--s3); }
+  .grid-2, .grid-3 { grid-template-columns: 1fr; }
+  .stats { flex-wrap: wrap; }
+  .stat { flex: 1 1 50%; border-bottom: 1px solid var(--line); }
+  .topbar { padding: 0 var(--s3); gap: var(--s3); }
+  .topbar .context.hide-sm { display: none; }
+  .group-grid { grid-template-columns: repeat(4, 1fr); }
+  .radius-track { font-size: var(--t-small); }
+}

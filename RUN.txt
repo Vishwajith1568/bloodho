@@ -1,0 +1,107 @@
+BLOOD DONATION AND EMERGENCY BLOOD FINDER — Hyderabad
+=====================================================
+
+RUN (two commands from a clean clone)
+
+    npm install
+    npm start
+
+  Open http://localhost:5173
+  The API runs on :4000. The database file data/app.db is created and seeded
+  automatically the first time the server starts.
+
+  Single process:   npm run build && npm run start:api   -> http://localhost:4000
+  Wipe and reseed:  npm run db:reset
+  Backend check:    ./smoke.sh
+
+SIGN IN
+  The sign-in screen lists one account per portal; click an address to fill the form.
+
+  Donor        sridhar.1@donor.test        donor@123   (all 40: firstname.ID@donor.test)
+  Requester    kavitha.r@family.test       care@123
+  Blood bank   ntrtrust@bank.test          bank@123    (also redcross / chiranjeevi /
+                                                        osmania / gandhi / ashwini)
+  City control control@bloodfinder.test    admin@123
+
+  Your account decides which portal opens. Typing another portal's URL redirects you
+  back to your own; the API refuses it independently with a wrong_portal error.
+
+DEMO — REQUESTER PORTAL
+  "Raise a request" is the SOS form; submit it empty once to see inline validation on
+  every field. Fill it in (AB- platelets at KIMS Kondapur, 3 units, critical) and save.
+  The tracker shows the request Unverified and unable to reach donors. Send the OTP —
+  the six-digit code appears in a hatched development strip, since there is no SMS
+  gateway offline — and verify it. "Alert donors" is now available. After broadcasting,
+  the radius track shows 5 km active with a countdown; leave it 45 seconds and it widens
+  to 10, then 15, then 25 km on its own, alerting newly reachable donors at each ring.
+  Donor names are masked and numbers read "Hidden" until a donor accepts. "Blood bank
+  stock" searches live stock compatible with the chosen group, sorted by distance.
+
+DEMO — DONOR PORTAL
+  "Requests for you" opens on the eligibility panel: a status badge and, if deferred, a
+  countdown to the next eligible date (90 days male, 120 female). Below it, any matched
+  request shows the hospital, distance and units pledged, with Accept and Cannot go.
+  Accepting reveals the attendant's number to you and yours to them, and nothing before
+  that. "My profile" pauses and resumes requests and sets how you want to be reached.
+  "Donation history" lists every donation with its certificate number, then the
+  milestones earned and still to earn. "Blood camps" registers and cancels a slot.
+
+DEMO — HOSPITAL AND BLOOD BANK PORTAL
+  "Inventory" is the group by component matrix with units expiring within seven days
+  flagged in each cell. "Stock movement" records a receipt, an issue or a discard;
+  issues draw from the batch closest to expiry first, and asking for more than is held
+  is refused with the real count. Watch the inventory total move after a receipt.
+  "Expiry and wastage" ranks batches by days remaining and totals units already lost.
+  "Request queue" accepts, reserves or rejects requests routed here. "Verify requests"
+  is the hospital counter-signing an attendant's requisition. "Inter-bank transfer"
+  asks another centre for units; marking one handed over creates stock at the receiving
+  end. "Camp collection" adds what a drive collected straight into stock.
+
+DEMO — ADMIN PORTAL
+  "City metrics" carries median fulfilment time, fulfilment rate, the voluntary against
+  replacement split, units expired unused and donor retention. "Donor verification"
+  awards and revokes the verified badge. "Flagged requests" upholds or dismisses hoax
+  and abuse reports; upholding cancels the request and stops further alerts. "Blood
+  banks" onboards a centre and delists one. "Camp scheduling" publishes a camp, which
+  appears in the donor portal for registration immediately. "Feedback inbox" collects
+  messages from the other three portals, filterable by source.
+
+CROSS-CUTTING
+  Trust layer     Every request carries unverified / OTP verified / hospital verified.
+                  Unverified requests are visibly marked and refused broadcast by the
+                  server, not only by the interface.
+  Contact privacy Donor numbers are withheld server-side until that donor accepts.
+  Request access  A request can only be read or acted on by the account that raised it.
+                  Another attendant asking for it by ID gets a 404, not a 403, so the
+                  response does not even confirm the request exists.
+  Languages       The top-bar switch changes the interface between English, Hindi and
+                  Telugu. It covers navigation, portal names, page titles, the whole SOS
+                  form and the status / urgency / verification vocabulary in every
+                  table. The choice persists across reloads and follows you between
+                  portals. Record data (donor names, hospitals, localities) stays in
+                  Latin script, and validation text from the server stays in English.
+  Low bandwidth   The top-bar toggle drops to a system font stack, removes every icon,
+                  collapses to single-column dense tables and asks the API for a
+                  lighter payload (?lean=1).
+  Every state     Empty, loading, error and the "no donor responded yet" state are all
+                  designed. To see the last one, raise an AB- platelet request — the
+                  scarcest combination in the register — and watch it find nobody at
+                  5 km before widening.
+  Responsive      Works down to phone width; tables scroll inside their panel.
+
+NOTES AND LIMITS
+  Distances are straight-line (haversine) from stored coordinates, labelled "direct" in
+  the interface. Road distance needs a routing service, which the offline constraint
+  rules out. Eligibility is modelled for whole blood only. The radius stage length
+  (45 seconds) is one constant in server/lib/domain.ts.
+
+  The Hindi and Telugu strings were not written or reviewed by a native speaker. The
+  switch works and the coverage is real, but for a service people use in an emergency
+  that review is not optional — treat the translations as demo-grade. Every string sits
+  in one file, client/src/lib/i18n.tsx, so corrections are a single edit. Noto Sans
+  Devanagari and Noto Sans Telugu are bundled, because IBM Plex ships no Indic glyphs
+  and Telugu vowel signs shape incorrectly without them.
+
+  Seeded metrics come from 22 historic requests with realistic fulfilment times, so the
+  dashboard figures (57 min median, 71% fulfilment, 51% retention) are defensible
+  rather than placeholder.
